@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	host     = "mkt-db"
+	host     = "database-qrmemorial.cdmo8e8k81x8.us-east-1.rds.amazonaws.com"
 	port     = 3306
-	user     = "root"
-	password = "D0uGu57$"
+	user     = "admin"
+	password = ">8!>1%9axOK]H$+>N$SwNzNHOL<y"
 	dbname   = "mkt_db"
 )
 

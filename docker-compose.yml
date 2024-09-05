@@ -1,16 +1,14 @@
-version: '3.8'
-
 services:
   lead_api:
     container_name: lead-api
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.backend
     image: gustavosg940/lead_api:latest
     ports:
       - "8000:8000"
-    depends_on:
-      - mkt_db
+    # depends_on:
+    #   - mkt_db
 
   # mkt_db:
   #   container_name: mkt-db
@@ -26,13 +24,14 @@ services:
 
   frontend:
     container_name: lead-frontend
-    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    image: gustavosg940/lead_frontend:latest  # Ou a imagem criada localmente
     ports:
       - "8080:80"
-    volumes:
-      - ./frontend:/usr/share/nginx/html:ro
     depends_on:
       - lead_api
 
-volumes:
-  mysqldata:
+# volumes:
+#   mysqldata:

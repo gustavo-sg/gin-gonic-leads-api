@@ -16,7 +16,7 @@ func main() {
 
 	// Configuração do CORS
 	server.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:8080"},            // Permitir o frontend
+		AllowOrigins:     []string{"http://54.209.9.77:8080"},            // Permitir o frontend
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},     // Métodos permitidos
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"}, // Cabeçalhos permitidos
 		AllowCredentials: true,                                         // Permitir cookies, autenticação e outras credenciais

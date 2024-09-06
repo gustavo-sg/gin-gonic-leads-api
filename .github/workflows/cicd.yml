@@ -13,17 +13,39 @@ jobs:
               uses: actions/checkout@v4
             - name: Login to Docker Hub
               run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
-            - name: Build Docker Image
-              run: docker build -t gustavosg940/lead_api .
-            - name: Push Image to Docker Hub
+            - name: Build Docker Image API
+              run: docker build -t gustavosg940/lead_api:latest -f Dockerfile.backend .
+            - name: Build Docker Image Frontend
+              run: docker build -t gustavosg940/lead_frontend:latest -f Dockerfile.frontend .
+            - name: Push Image API
               run: docker push gustavosg940/lead_api:latest
+            - name: Push Image Frontend
+              run: docker push gustavosg940/lead_frontend:latest
+
     deploy:
-        needs: build
-        runs-on: self-hosted
-        steps:
-            - name: Pull docker image
-              run: docker pull gustavosg940/lead_api:latest
-            - name: Delete old container
-              run: docker rm -f lead-api-contain
-            - name: Run docker container
-              run: docker run -d -p 800:8000 --name lead-api-container gustavosg940/lead_api
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v2
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: us-east-1  # Substitua pela região onde seu cluster ECS está
+
+        # - name: Login to Amazon ECR
+        #   run: |
+        #     aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 767828732374.dkr.ecr.us-east-1.amazonaws.com
+
+        - name: Update ECS Service
+          run: |
+            aws ecs update-service \
+              --cluster lead-api-cluster \
+              --service lead-api-service \
+              --force-new-deployment
+
+        - name: Wait for Service to Stabilize
+          run: |
+            aws ecs wait services-stable \
+              --cluster lead-api-cluster \
+              --services lead-api-service
